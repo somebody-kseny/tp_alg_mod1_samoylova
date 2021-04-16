@@ -15,8 +15,7 @@ public:
     T& operator[](int);
     MyVec(){
         size = 0;
-        capacity = 10;
-        buf = new T[capacity];
+        capacity = 0;
     }
 private:
     size_t capacity;
@@ -36,6 +35,11 @@ bool MyVec<T>::push_back(T &new_item) {
 
 template<class T>
 bool MyVec<T>::increase_buf() {
+    if (capacity == 0){
+        capacity = 10;
+        buf = new T[capacity];
+        return true;
+    }
     T* vec = new T[capacity*2];
     for (int i = 0; i < size; i++){
         vec[i] = buf[i];

@@ -17,14 +17,13 @@ template <class T> //так как методы класса иногда воз
 class Dek {
 public:
     void push_front(T&);
-    T pop_front();
+    const T* pop_front();
     void push_back(T&);
-    T pop_back();
+    const T* pop_back();
     bool is_not_empty();
     Dek(){
         size = 0;
-        capacity = 10;
-        buf = new T[capacity];
+        capacity = 0;
         begin = 0;
         end = 0;
     };
@@ -40,13 +39,13 @@ private:
 
 template<class T>
 void Dek<T>::push_front(T &new_item) {
+    if (size == capacity){
+        increase_buf();
+    }
     if(size == 0){
         buf[begin] = new_item;
         ++size;
         return;
-    }
-    if (size == capacity){
-        increase_buf();
     }
     if( --begin < 0 ){
         begin += capacity;
@@ -56,11 +55,11 @@ void Dek<T>::push_front(T &new_item) {
 }
 
 template<class T>
-T Dek<T>::pop_front(){
+const T* Dek<T>::pop_front(){
     if(size == 0){
-        return -1;
+        return nullptr;
     }
-    T return_val = buf[begin];
+    T* return_val = &buf[begin];
     if(--size == 0){
         return return_val;
     }
@@ -72,13 +71,13 @@ T Dek<T>::pop_front(){
 
 template<class T>
 void Dek<T>::push_back(T &new_item) {
+    if (size == capacity){
+        increase_buf();
+    }
     if(size == 0){
         buf[end] = new_item;
         ++size;
         return;
-    }
-    if (size == capacity){
-        increase_buf();
     }
     if( ++end >= capacity ){
         end -= capacity;
@@ -88,11 +87,11 @@ void Dek<T>::push_back(T &new_item) {
 }
 
 template<class T>
-T Dek<T>::pop_back(){
+const T* Dek<T>::pop_back(){
     if(size == 0){
-        return -1;
+        return nullptr;
     }
-    T return_val = buf[end];
+    T* return_val = &buf[end];
     if (--size == 0){
         return return_val;
     }
@@ -104,6 +103,11 @@ T Dek<T>::pop_back(){
 
 template<class T>
 bool Dek<T>::increase_buf() {
+    if (capacity == 0){
+        capacity = 10;
+        buf = new T[capacity];
+        return true;
+    }
     T* vec = new T[capacity*2];
     if(begin < end){
     	for(int i = begin; i <= end; i++){
@@ -130,16 +134,24 @@ int main(){ // отделять ввод от решения, кажется, н
         int b; 
         Dek<int> dek = Dek<int>();
         bool flag = true;
-
+        const int* tmp;
+        int returned_b;
         for(int i = 0; i < n; i++){
             std::cin >> a >> b;
+
             switch (a)
             {
             case 1:
                 dek.push_front(b);
                 break;
             case 2:
-                if (dek.pop_front() != b){
+                tmp = dek.pop_front();
+                if(tmp){
+                    returned_b = *tmp;
+                }else{
+                    returned_b = -1;
+                }
+                if (returned_b != b){
                     flag = false;
                 }
                 break;
@@ -147,7 +159,13 @@ int main(){ // отделять ввод от решения, кажется, н
                 dek.push_back(b);
                 break;
             case 4:
-                if (dek.pop_back() != b){
+                tmp = dek.pop_back();
+                if(tmp){
+                    returned_b = *tmp;
+                }else{
+                    returned_b = -1;
+                }
+                if (returned_b != b){
                     flag = false;
                 }
                 break;

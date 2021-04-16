@@ -44,8 +44,7 @@ public:
     bool is_not_empty();
     MyVec(){
         size = 0;
-        capacity = 10;
-        buf = new T[capacity];
+        capacity = 0;
     }
 private:
     size_t capacity;
@@ -63,8 +62,7 @@ public:
     bool is_not_empty();
     MyHeap(Comparator<T>* corp_in){
         size = 0;
-        capacity = 10;
-        buf = new T[capacity];
+        capacity = 0;
         comp = corp_in;
     };
     ~MyHeap(){
@@ -82,7 +80,7 @@ private:
 
 template<class T>
 void MyHeap<T>::insert(T& t){
-    if (size+1 == capacity){
+    if (size == capacity){
         increase_buf();
     }
     buf[size] = t;
@@ -148,6 +146,11 @@ void MyHeap<T>::siff_down(size_t pos){
 
 template<class T>
 void MyHeap<T>::increase_buf(){
+    if (capacity == 0){
+        capacity = 10;
+        buf = new T[capacity];
+        return;
+    }
     T* new_buf;
     size_t new_capacity = capacity*2;
     new_buf = new T[new_capacity];
@@ -183,6 +186,11 @@ bool MyVec<T>::is_not_empty(){
 
 template<class T>
 bool MyVec<T>::increase_buf() {
+    if (capacity == 0){
+        capacity = 10;
+        buf = new T[capacity];
+        return true;
+    }
     T* vec = new T[capacity*2];
     for (int i = 0; i < size; i++){
         vec[i] = buf[i];
@@ -256,6 +264,6 @@ int main(){
     int n;
     short K;
     input(basket, n, K);
-    std::cout << logics(basket, n, K);
+    std::cout << logics(basket, n, K) << std::endl;
     return 0;
 };

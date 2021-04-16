@@ -18,7 +18,7 @@ void swap(T& a, T& b){
 };
 
 template<typename T>
-bool compare(const T& a, const T& b){
+bool first_is_greater(const T& a, const T& b){
     if (a > b) {
         return true;
     } else {
@@ -36,7 +36,7 @@ void print_arr(T* arr, int start, int end){
 };
 
 template<typename T>
-int partition(T* arr, int start, int end, bool (*compare_foo)(const T&, const T&)){
+int partition(T* arr, int start, int end, bool (*compare)(const T&, const T&)){
     // выбор опорного элемента
     int pivot_pos = start + rand() % (end - start);
     swap(arr[pivot_pos], arr[end-1]);
@@ -45,7 +45,7 @@ int partition(T* arr, int start, int end, bool (*compare_foo)(const T&, const T&
     int i = start;
     int j = start;
     while (j != end-1){
-        if(compare_foo(arr[j], pivot)){
+        if(compare(arr[j], pivot)){
             ++j;
         } else {
             swap(arr[i], arr[j]);
@@ -58,6 +58,21 @@ int partition(T* arr, int start, int end, bool (*compare_foo)(const T&, const T&
     return i;
 };
 
+void search_of_k_statistic(long*array, const int k, const long n){
+    bool (*compare)(const long&, const long&) = first_is_greater;
+    int pos_start = 0;
+    int pos_end = n;
+    int pos_of_part;
+    do {
+        pos_of_part = partition(array, pos_start, pos_end, compare);
+        if ( compare(pos_of_part , k) ){
+            pos_end = pos_of_part;
+        } else {
+            pos_start = pos_of_part;
+        }
+    } while((pos_of_part != k)&&((pos_end - pos_start) > 2));
+};
+
 int main(){
     // ввод
     long n;
@@ -67,19 +82,8 @@ int main(){
     for(long i = 0; i < n; i++){
         std::cin >> array[i];
     }
-    // решение
-    bool (*compare_foo)(const long&, const long&) = compare;
-    int pos_start = 0;
-    int pos_end = n;
-    int pos_of_part;
-    do {
-        pos_of_part = partition(array, pos_start, pos_end, compare_foo);
-        if ( compare_foo(pos_of_part , k) ){
-            pos_end = pos_of_part;
-        } else {
-            pos_start = pos_of_part;
-        }
-    } while((pos_of_part != k)&&((pos_end - pos_start) > 2));
+
+    search_of_k_statistic(array, k, n);
     
     std::cout << array[k] << std::endl;
     delete[] array;
