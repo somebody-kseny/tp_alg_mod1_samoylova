@@ -40,15 +40,12 @@ private:
     int balanceFactor(std::shared_ptr<Node<T>> node);
     void fixHeight(std::shared_ptr<Node<T>> node);
 
-    //int counterForK;
-    std::shared_ptr<Node<T>> preorderGoSearchK(std::shared_ptr<Node<T>> node, int k);
-
     std::shared_ptr<Node<T>> smallRight(std::shared_ptr<Node<T>> p);
     std::shared_ptr<Node<T>> smallLeft(std::shared_ptr<Node<T>> q);
     std::shared_ptr<Node<T>> balance(std::shared_ptr<Node<T>> p);
 
     std::shared_ptr<Node<T>> insert(std::shared_ptr<Node<T>> node, T& key);
-    std::shared_ptr<Node<T>> find(std::shared_ptr<Node<T>> node, T key);
+    std::shared_ptr<Node<T>> find(std::shared_ptr<Node<T>>& node, T key);
 
     std::shared_ptr<Node<T>> findMin(std::shared_ptr<Node<T>> node);
 
@@ -147,14 +144,15 @@ bool BinTree<T>::remove(T k){
 }
 
 template<class T>
-std::shared_ptr<Node<T>> BinTree<T>::find(std::shared_ptr<Node<T>> node, T key) {
+std::shared_ptr<Node<T>> BinTree<T>::find(std::shared_ptr<Node<T>>& node, T key) {
     if( !node ) return nullptr;
     if(node->key == key){
         return node;
-    } else if( compare(key, node->key) )
-        node->left = find(node->left, key);
-    else
-        node->right = find(node->right, key);
+    } else if( compare(key, node->key) ) {
+        return node->left = find(node->left, key);
+    } else {
+        return node->right = find(node->right, key);
+    }
 }
 
 template<class T>
@@ -195,16 +193,6 @@ std::shared_ptr<Node<T>> BinTree<T>::remove(std::shared_ptr<Node<T>> p, int k) /
 
 }
 
-//template<class T>
-//std::shared_ptr<Node<T>> BinTree<T>::preorderGoSearchK(std::shared_ptr<Node<T>> node, int k){
-//    if (counterForK == k) {
-//        return node;
-//    }
-//    preorderGoSearchK(root->left, k);
-//    counterForK++;
-//    preorderGoSearchK(root->right, k);
-//}
-
 template<class T>
 T BinTree<T>::getStatistic(int k) {
     std::weak_ptr<Node<T>> current = root;
@@ -233,7 +221,8 @@ T BinTree<T>::getStatistic(int k) {
                 goRight = false;
             }
         }
-    } while (i < 8); // используем гарантия что порядеовая статистика существует
+    } while (i < 8); // используем гарантию что порядковая статистика существует
+    return 42;
 }
 
 bool ifRightBigger(int &a, int &b){
